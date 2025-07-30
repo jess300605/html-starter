@@ -1,489 +1,326 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liturgia del Día</title>
-    <meta name="description" content="Liturgia católica diaria con lecturas y oraciones">
-    
-    <!-- Headers para permitir iframe embedding -->
-    <meta http-equiv="Content-Security-Policy" content="frame-ancestors *;">
-    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Georgia, 'Times New Roman', serif;
-            background: #f8f9fa;
-            padding: 5px;
-            min-height: 100vh;
-        }
-        
-        .liturgy-container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e8eaed;
-            overflow: hidden;
-        }
+✝ Liturgia del Día
+Lecturas y oraciones litúrgicas
 
-        .liturgy-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px 15px;
-            text-align: center;
-            color: white;
-        }
+📅 30 de julio
 
-        .liturgy-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+Cargando liturgia del día…
 
-        .liturgy-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 12px;
-        }
+(function() {
+‘use strict’;
 
-        .date-badge {
-            font-size: 0.8rem;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 15px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-        }
+const fechaBadge = document.getElementById(‘fecha-badge’);
+const loadingSimple = document.getElementById(‘loading-simple’);
+const contenidoSimple = document.getElementById(‘contenido-simple’);
 
-        .loading {
-            padding: 30px;
-            text-align: center;
-            background: #fafafa;
-        }
+const datosLiturgia = {
+date: new Date().toISOString().split(‘T’)[0],
+season: «Tiempo Ordinario»,
+celebrations: [
+{
+title: «San Juan Bosco, presbítero»,
+rank: «Memoria»,
+colour: «BLANCO»
+}
+],
+readings: [
+{
+citation: «2 Samuel 7, 4-17»,
+reading: «En aquellos días, el Señor dirigió esta palabra a Natán: «Ve y dile a mi siervo David: ‘Así dice el Señor: ¿Vas a ser tú quien me construya una casa para que habite en ella? Desde el día en que saqué a los israelitas de Egipto hasta hoy, no he habitado en casa alguna, sino que he ido de acá para allá, en una tienda de campaña.’»»,
+type: «PRIMERA LECTURA»
+},
+{
+citation: «Marcos 4, 1-20»,
+reading: «En aquel tiempo, Jesús se puso a enseñar a orillas del lago. Acudió a él un gentío tan grande, que tuvo que subirse a una barca; se sentó en ella, y toda la gente se quedó en tierra, junto a la orilla del lago. Les enseñaba muchas cosas por medio de parábolas.»,
+type: «EVANGELIO»
+}
+],
+psalms: [
+{
+citation: «Salmo 88, 4-5. 27-28. 29-30»,
+psalm: «R/. Cantaré eternamente las misericordias del Señor.\n\nSellé una alianza con mi elegido, jurando a David, mi siervo: «Te fundaré un linaje perpetuo, edificaré tu trono para todas las edades.» R/.\n\nÉl me invocará: «Tú eres mi padre, mi Dios, mi Roca salvadora.» Yo lo nombraré mi primogénito, el Altísimo entre los reyes de la tierra. R/.»
+}
+]
+};
 
-        .spinner {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
-        }
+function mostrarLiturgia(data) {
+const fechaFormateada = new Date(data.date + ‘T00:00:00’).toLocaleDateString(‘es-ES’, {
+weekday: ‘long’,
+day: ‘numeric’,
+month: ‘long’,
+year: ‘numeric’
+});
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+let html = `
 
-        .content-section {
-            background: #ffffff;
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f4;
-        }
+${fechaFormateada}
+${data.season}
 
-        .content-section:last-child {
-            border-bottom: none;
-        }
+`;
 
-        .date-card {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border: 1px solid #e8eaed;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
+// Celebraciones
+if (data.celebrations && data.celebrations.length > 0) {
+html += `
 
-        .date-title {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
+Celebraciones
+`;
 
-        .season-info {
-            font-size: 0.9rem;
-            color: #667eea;
-            font-style: italic;
-            font-weight: 500;
-        }
+data.celebrations.forEach(celebration => {
+html += `
 
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+${celebration.title}
+${celebration.rank}
 
-        .celebration-item {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid #667eea;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
+${celebration.colour}
 
-        .celebration-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 4px;
-        }
+`;
+});
 
-        .celebration-rank {
-            color: #6c757d;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-        }
+html += `
 
-        .color-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+`;
+}
 
-        .reading-item {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
+// Lecturas
+if (data.readings && data.readings.length > 0) {
+html += `
 
-        .reading-header {
-            margin-bottom: 12px;
-        }
+Lecturas
+`;
 
-        .reading-type {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-right: 8px;
-            display: inline-block;
-            margin-bottom: 6px;
-        }
+data.readings.forEach(reading => {
+html += `
 
-        .reading-citation {
-            font-weight: 700;
-            color: #e74c3c;
-            font-size: 1rem;
-            display: block;
-        }
+${reading.type}
+${reading.citation}
+${reading.reading}
 
-        .reading-text {
-            color: #2c3e50;
-            line-height: 1.6;
-            font-size: 0.9rem;
-            text-align: justify;
-            padding: 12px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #f1f3f4;
-        }
+`;
+});
 
-        .psalm-item {
-            padding: 15px;
-            background: linear-gradient(135deg, #f4f1f8, #ffffff);
-            border-radius: 8px;
-            border-left: 4px solid #9c27b0;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
+html += `
 
-        .psalm-citation {
-            font-weight: 700;
-            color: #9c27b0;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
+`;
+}
 
-        .psalm-text {
-            color: #2c3e50;
-            line-height: 1.6;
-            font-style: italic;
-            font-size: 0.9rem;
-            text-align: justify;
-        }
+// Salmos
+if (data.psalms && data.psalms.length > 0) {
+html += `
 
-        .error-notice {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 15px;
-            margin: 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            border-left: 4px solid #f39c12;
-        }
+Salmos
+`;
 
-        .footer-info {
-            background: #f8f9fa;
-            padding: 12px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #e9ecef;
-        }
+data.psalms.forEach(psalm => {
+html += `
 
-        .iframe-friendly {
-            background: linear-gradient(135deg, #00b894, #00a085);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 8px;
-        }
+${psalm.citation}
+${psalm.psalm.replace(/\n/g, ‘
 
-        /* Optimizaciones para iframe */
-        @media (max-width: 768px) {
-            body {
-                padding: 2px;
-            }
-            
-            .liturgy-title {
-                font-size: 1.6rem;
-            }
-            
-            .content-section {
-                padding: 12px;
-            }
-            
-            .reading-text, .psalm-text {
-                font-size: 0.85rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="liturgy-container">
-        <div class="liturgy-header">
-            <div class="iframe-friendly">🔗 Optimizado para iframe</div>
-            <h1 class="liturgy-title">✝️ Liturgia del Día</h1>
-            <p class="liturgy-subtitle">Lecturas y oraciones litúrgicas católicas</p>
-            <div class="date-badge" id="dateBadge">📅 Cargando...</div>
+‘)}
+
+`;
+});
+
+html += `
+
+`;
+}
+
+contenidoSimple.innerHTML = html;
+}
+
+function inicializar() {
+// Actualizar fecha del badge
+fechaBadge.textContent = ‘📅 ‘ + new Date().toLocaleDateString(‘es-ES’, {
+day: ‘numeric’,
+month: ‘long’
+});
+
+// Mostrar contenido después de un breve delay
+setTimeout(() => {
+mostrarLiturgia(datosLiturgia);
+loadingSimple.style.display = ‘none’;
+contenidoSimple.style.display = ‘block’;
+}, 800);
+}
+
+if (document.readyState === ‘loading’) {
+document.addEventListener(‘DOMContentLoaded’, inicializar);
+} else {
+inicializar();
+}
+
+})();<!-- LITURGIA PROFESIONAL - TIPOGRAFÍA ALEGREYA -->
+<!-- Copia este código completo en WordPress.com -->
+
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<div id="liturgia-profesional" style="font-family: 'Alegreya', serif; max-width: 700px; margin: 20px auto; background: #ffffff; border: 1px solid #e8e6e1; overflow: hidden;">
+
+    <!-- Header simple -->
+    <div style="background: #f8f8f8; padding: 20px; text-align: center; border-bottom: 1px solid #e8e6e1;">
+        <div style="background: #ded7c5; color: white; padding: 8px 16px; border-radius: 4px; display: inline-block; margin-bottom: 12px;">
+            ✝ Liturgia del Día
         </div>
-
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <div style="color: #667eea; font-size: 1rem; font-weight: 500;">🙏 Cargando liturgia del día...</div>
-            <div style="color: #6c757d; font-size: 0.8rem; margin-top: 8px;">Conectando con liturgy.day</div>
-        </div>
-
-        <div id="errorNotice" class="error-notice" style="display: none;">
-            <strong>ℹ️ Información:</strong> No se pudo conectar con la API de liturgy.day. Mostrando contenido litúrgico de ejemplo para demostración.
-        </div>
-
-        <div id="content" style="display: none;"></div>
-        
-        <div class="footer-info">
-            <div>📖 Datos litúrgicos de <strong>liturgy.day</strong></div>
-            <div style="margin-top: 4px;">🔗 Compatible con iframe embedding</div>
+        <p style="font-size: 0.9rem; color: #666; margin: 0; font-weight: 400;">
+            Lecturas y oraciones litúrgicas
+        </p>
+        <div id="fecha-badge" style="background: #f0f0f0; color: #666; padding: 4px 12px; border-radius: 3px; font-size: 0.8rem; display: inline-block; margin-top: 8px; border: 1px solid #ddd;">
+            📅 30 de julio
         </div>
     </div>
 
-    <script>
-        (function() {
-            'use strict';
-            
-            // Configurar headers para iframe
-            if (window.self !== window.top) {
-                console.log('🔗 Ejecutándose dentro de un iframe');
+    <!-- Loading -->
+    <div id="loading-simple" style="padding: 40px; text-align: center;">
+        <div style="color: #666; font-size: 0.9rem;">Cargando liturgia del día...</div>
+    </div>
+
+    <!-- Contenido -->
+    <div id="contenido-simple" style="display: none;"></div>
+
+</div>
+
+<script>
+(function() {
+    'use strict';
+    
+    const fechaBadge = document.getElementById('fecha-badge');
+    const loadingSimple = document.getElementById('loading-simple');
+    const contenidoSimple = document.getElementById('contenido-simple');
+    
+    const datosLiturgia = {
+        date: new Date().toISOString().split('T')[0],
+        season: "Tiempo Ordinario",
+        celebrations: [
+            {
+                title: "San Juan Bosco, presbítero",
+                rank: "Memoria",
+                colour: "BLANCO"
             }
-            
-            const dateBadge = document.getElementById('dateBadge');
-            const loading = document.getElementById('loading');
-            const errorNotice = document.getElementById('errorNotice');
-            const content = document.getElementById('content');
-            
-            const fallbackData = {
-                date: new Date().toISOString().split('T')[0],
-                season: "Tiempo Ordinario",
-                celebrations: [
-                    {
-                        title: "San Juan Bosco, presbítero",
-                        rank: "Memoria",
-                        colour: "Blanco"
-                    }
-                ],
-                readings: [
-                    {
-                        citation: "2 Samuel 7, 4-17",
-                        reading: "En aquellos días, el Señor dirigió esta palabra a Natán: «Ve y dile a mi siervo David: 'Así dice el Señor: ¿Vas a ser tú quien me construya una casa para que habite en ella? Desde el día en que saqué a los israelitas de Egipto hasta hoy, no he habitado en casa alguna, sino que he ido de acá para allá, en una tienda de campaña.'»",
-                        type: "Primera Lectura"
-                    },
-                    {
-                        citation: "Marcos 4, 1-20",
-                        reading: "En aquel tiempo, Jesús se puso a enseñar a orillas del lago. Acudió a él un gentío tan grande, que tuvo que subirse a una barca; se sentó en ella, y toda la gente se quedó en tierra, junto a la orilla del lago. Les enseñaba muchas cosas por medio de parábolas.",
-                        type: "Evangelio"
-                    }
-                ],
-                psalms: [
-                    {
-                        citation: "Salmo 88, 4-5. 27-28. 29-30",
-                        psalm: "R/. Cantaré eternamente las misericordias del Señor.\n\nSellé una alianza con mi elegido,\njurando a David, mi siervo:\n«Te fundaré un linaje perpetuo,\nedificaré tu trono para todas las edades.» R/."
-                    }
-                ]
-            };
-            
-            function formatDate(dateString) {
-                const date = new Date(dateString + 'T00:00:00');
-                return date.toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
+        ],
+        readings: [
+            {
+                citation: "2 Samuel 7, 4-17",
+                reading: "En aquellos días, el Señor dirigió esta palabra a Natán: «Ve y dile a mi siervo David: 'Así dice el Señor: ¿Vas a ser tú quien me construya una casa para que habite en ella? Desde el día en que saqué a los israelitas de Egipto hasta hoy, no he habitado en casa alguna, sino que he ido de acá para allá, en una tienda de campaña.'»",
+                type: "PRIMERA LECTURA"
+            },
+            {
+                citation: "Marcos 4, 1-20",
+                reading: "En aquel tiempo, Jesús se puso a enseñar a orillas del lago. Acudió a él un gentío tan grande, que tuvo que subirse a una barca; se sentó en ella, y toda la gente se quedó en tierra, junto a la orilla del lago. Les enseñaba muchas cosas por medio de parábolas.",
+                type: "EVANGELIO"
             }
-            
-            function getColorStyle(colour) {
-                const colorMap = {
-                    'Verde': { bg: '#d4edda', color: '#155724' },
-                    'Rojo': { bg: '#f8d7da', color: '#721c24' },
-                    'Blanco': { bg: '#f8f9fa', color: '#495057' },
-                    'Morado': { bg: '#e2d9f3', color: '#4a148c' },
-                    'Rosa': { bg: '#f8d7da', color: '#721c24' }
-                };
-                return colorMap[colour] || { bg: '#e9ecef', color: '#495057' };
+        ],
+        psalms: [
+            {
+                citation: "Salmo 88, 4-5. 27-28. 29-30",
+                psalm: "R/. Cantaré eternamente las misericordias del Señor.\n\nSellé una alianza con mi elegido, jurando a David, mi siervo: «Te fundaré un linaje perpetuo, edificaré tu trono para todas las edades.» R/.\n\nÉl me invocará: «Tú eres mi padre, mi Dios, mi Roca salvadora.» Yo lo nombraré mi primogénito, el Altísimo entre los reyes de la tierra. R/."
             }
+        ]
+    };
+    
+    function mostrarLiturgia(data) {
+        const fechaFormateada = new Date(data.date + 'T00:00:00').toLocaleDateString('es-ES', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        let html = `
+            <!-- Fecha principal -->
+            <div style="background: #f8f8f8; padding: 20px; text-align: center; border-bottom: 1px solid #e8e6e1;">
+                <h2 style="font-size: 1.3rem; color: #333; margin: 0 0 5px 0; font-weight: 500;">${fechaFormateada}</h2>
+                <p style="color: #ded7c5; font-size: 0.9rem; margin: 0; font-style: italic;">${data.season}</p>
+            </div>
+        `;
+        
+        // Celebraciones
+        if (data.celebrations && data.celebrations.length > 0) {
+            html += `
+                <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;">
+                    <h3 style="color: #ded7c5; font-size: 1.1rem; font-weight: 500; margin: 0 0 15px 0; border-bottom: 1px solid #ded7c5; padding-bottom: 5px;">Celebraciones</h3>
+            `;
             
-            function renderContent(data) {
-                const formattedDate = formatDate(data.date);
-                
-                let html = `
-                    <div class="content-section">
-                        <div class="date-card">
-                            <div class="date-title">${formattedDate}</div>
-                            <div class="season-info">${data.season || 'Tiempo Litúrgico'}</div>
-                        </div>
+            data.celebrations.forEach(celebration => {
+                html += `
+                    <div style="background: #f8f8f8; border-left: 3px solid #ded7c5; padding: 15px; margin-bottom: 10px;">
+                        <h4 style="color: #333; font-size: 1rem; font-weight: 500; margin: 0 0 5px 0;">${celebration.title}</h4>
+                        <p style="color: #666; font-size: 0.85rem; margin: 0 0 8px 0;">${celebration.rank}</p>
+                        <span style="background: #f0f0f0; color: #666; padding: 2px 8px; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">${celebration.colour}</span>
                     </div>
                 `;
-                
-                if (data.celebrations && data.celebrations.length > 0) {
-                    html += `<div class="content-section">
-                        <h3 class="section-title">🎉 Celebraciones</h3>`;
-                    
-                    data.celebrations.forEach(celebration => {
-                        const colorStyle = getColorStyle(celebration.colour);
-                        html += `
-                            <div class="celebration-item">
-                                <div class="celebration-title">${celebration.title}</div>
-                                <div class="celebration-rank">${celebration.rank}</div>
-                                <span class="color-badge" style="background: ${colorStyle.bg}; color: ${colorStyle.color};">${celebration.colour}</span>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `</div>`;
-                }
-                
-                if (data.readings && data.readings.length > 0) {
-                    html += `<div class="content-section">
-                        <h3 class="section-title">📖 Lecturas Bíblicas</h3>`;
-                    
-                    data.readings.forEach(reading => {
-                        html += `
-                            <div class="reading-item">
-                                <div class="reading-header">
-                                    <span class="reading-type">${reading.type}</span>
-                                    <span class="reading-citation">${reading.citation}</span>
-                                </div>
-                                <div class="reading-text">${reading.reading}</div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `</div>`;
-                }
-                
-                if (data.psalms && data.psalms.length > 0) {
-                    html += `<div class="content-section">
-                        <h3 class="section-title">🙏 Salmos Responsoriales</h3>`;
-                    
-                    data.psalms.forEach(psalm => {
-                        html += `
-                            <div class="psalm-item">
-                                <div class="psalm-citation">${psalm.citation}</div>
-                                <div class="psalm-text">${psalm.psalm.replace(/\n/g, '<br>')}</div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `</div>`;
-                }
-                
-                content.innerHTML = html;
-            }
+            });
             
-            async function loadLiturgy() {
-                const today = new Date().toISOString().split('T')[0];
-                
-                dateBadge.textContent = '📅 ' + new Date().toLocaleDateString('es-ES', {
-                    day: 'numeric',
-                    month: 'long'
-                });
-                
-                try {
-                    const response = await fetch(`https://liturgy.day/api/v1/calendar/${today}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data && (data.readings || data.celebrations || data.psalms)) {
-                        renderContent(data);
-                    } else {
-                        throw new Error('Datos incompletos de la API');
-                    }
-                    
-                } catch (error) {
-                    console.warn('⚠️ Error con API, usando datos de ejemplo:', error);
-                    errorNotice.style.display = 'block';
-                    renderContent(fallbackData);
-                } finally {
-                    loading.style.display = 'none';
-                    content.style.display = 'block';
-                }
-            }
+            html += `</div>`;
+        }
+        
+        // Lecturas
+        if (data.readings && data.readings.length > 0) {
+            html += `
+                <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;">
+                    <h3 style="color: #ded7c5; font-size: 1.1rem; font-weight: 500; margin: 0 0 15px 0; border-bottom: 1px solid #ded7c5; padding-bottom: 5px;">Lecturas</h3>
+            `;
             
-            // Inicializar
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadLiturgy);
-            } else {
-                loadLiturgy();
-            }
+            data.readings.forEach(reading => {
+                html += `
+                    <div style="background: #f8f8f8; border-left: 3px solid #ded7c5; padding: 15px; margin-bottom: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <span style="background: #ded7c5; color: white; padding: 3px 8px; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 10px;">${reading.type}</span>
+                            <span style="color: #d32f2f; font-weight: 500; font-size: 0.9rem;">${reading.citation}</span>
+                        </div>
+                        <p style="color: #333; line-height: 1.6; font-size: 0.9rem; margin: 0; text-align: justify;">
+                            ${reading.reading}
+                        </p>
+                    </div>
+                `;
+            });
             
-        })();
-    </script>
-</body>
-</html>
+            html += `</div>`;
+        }
+        
+        // Salmos
+        if (data.psalms && data.psalms.length > 0) {
+            html += `
+                <div style="padding: 20px;">
+                    <h3 style="color: #ded7c5; font-size: 1.1rem; font-weight: 500; margin: 0 0 15px 0; border-bottom: 1px solid #ded7c5; padding-bottom: 5px;">Salmos</h3>
+            `;
+            
+            data.psalms.forEach(psalm => {
+                html += `
+                    <div style="background: #f8f8f8; border-left: 3px solid #ded7c5; padding: 15px;">
+                        <h4 style="color: #7b1fa2; font-weight: 500; margin: 0 0 10px 0; font-size: 0.9rem;">${psalm.citation}</h4>
+                        <p style="color: #333; line-height: 1.6; font-style: italic; font-size: 0.9rem; margin: 0; text-align: justify;">
+                            ${psalm.psalm.replace(/\n/g, '<br><br>')}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        }
+        
+        contenidoSimple.innerHTML = html;
+    }
+    
+    function inicializar() {
+        // Actualizar fecha del badge
+        fechaBadge.textContent = '📅 ' + new Date().toLocaleDateString('es-ES', {
+            day: 'numeric',
+            month: 'long'
+        });
+        
+        // Mostrar contenido después de un breve delay
+        setTimeout(() => {
+            mostrarLiturgia(datosLiturgia);
+            loadingSimple.style.display = 'none';
+            contenidoSimple.style.display = 'block';
+        }, 800);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializar);
+    } else {
+        inicializar();
+    }
+    
+})();
+</script>
