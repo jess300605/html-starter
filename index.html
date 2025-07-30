@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liturgia del Día</title>
     <meta name="description" content="Liturgia católica diaria con lecturas y oraciones">
+    
+    <!-- Headers para permitir iframe embedding -->
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors *;">
+    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
+    
     <style>
         * {
             margin: 0;
@@ -15,64 +20,64 @@
         body {
             font-family: Georgia, 'Times New Roman', serif;
             background: #f8f9fa;
-            padding: 10px;
+            padding: 5px;
             min-height: 100vh;
         }
         
         .liturgy-container {
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             border: 1px solid #e8eaed;
             overflow: hidden;
         }
 
         .liturgy-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px 20px;
+            padding: 20px 15px;
             text-align: center;
             color: white;
         }
 
         .liturgy-title {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .liturgy-subtitle {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .date-badge {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 15px;
             display: inline-block;
             backdrop-filter: blur(10px);
         }
 
         .loading {
-            padding: 50px;
+            padding: 30px;
             text-align: center;
             background: #fafafa;
         }
 
         .spinner {
             display: inline-block;
-            width: 32px;
-            height: 32px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         @keyframes spin {
@@ -82,7 +87,7 @@
 
         .content-section {
             background: #ffffff;
-            padding: 25px;
+            padding: 15px;
             border-bottom: 1px solid #f1f3f4;
         }
 
@@ -93,137 +98,137 @@
         .date-card {
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
             border: 1px solid #e8eaed;
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 15px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
 
         .date-title {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #2c3e50;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
         }
 
         .season-info {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #667eea;
             font-style: italic;
             font-weight: 500;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 8px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .celebration-item {
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
             border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 5px solid #667eea;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
 
         .celebration-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .celebration-rank {
             color: #6c757d;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
         }
 
         .color-badge {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .reading-item {
-            margin-bottom: 25px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
 
         .reading-header {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .reading-type {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-right: 10px;
+            margin-right: 8px;
             display: inline-block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .reading-citation {
             font-weight: 700;
             color: #e74c3c;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: block;
         }
 
         .reading-text {
             color: #2c3e50;
-            line-height: 1.7;
-            font-size: 1rem;
+            line-height: 1.6;
+            font-size: 0.9rem;
             text-align: justify;
-            padding: 15px;
+            padding: 12px;
             background: white;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid #f1f3f4;
         }
 
         .psalm-item {
-            padding: 20px;
+            padding: 15px;
             background: linear-gradient(135deg, #f4f1f8, #ffffff);
-            border-radius: 10px;
-            border-left: 5px solid #9c27b0;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border-left: 4px solid #9c27b0;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
 
         .psalm-citation {
             font-weight: 700;
             color: #9c27b0;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-size: 1rem;
         }
 
         .psalm-text {
             color: #2c3e50;
-            line-height: 1.7;
+            line-height: 1.6;
             font-style: italic;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-align: justify;
         }
 
@@ -231,48 +236,49 @@
             background: linear-gradient(135deg, #fff3cd, #ffeaa7);
             border: 1px solid #ffeaa7;
             color: #856404;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            border-left: 5px solid #f39c12;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border-left: 4px solid #f39c12;
         }
 
         .footer-info {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #6c757d;
             border-top: 1px solid #e9ecef;
         }
 
-        .success-badge {
+        .iframe-friendly {
             background: linear-gradient(135deg, #00b894, #00a085);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
             font-weight: 600;
             display: inline-block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
+        /* Optimizaciones para iframe */
         @media (max-width: 768px) {
             body {
-                padding: 5px;
+                padding: 2px;
             }
             
             .liturgy-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
             
             .content-section {
-                padding: 20px;
+                padding: 12px;
             }
             
             .reading-text, .psalm-text {
-                font-size: 0.95rem;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -280,7 +286,7 @@
 <body>
     <div class="liturgy-container">
         <div class="liturgy-header">
-            <div class="success-badge">✅ ¡Funcionando correctamente!</div>
+            <div class="iframe-friendly">🔗 Optimizado para iframe</div>
             <h1 class="liturgy-title">✝️ Liturgia del Día</h1>
             <p class="liturgy-subtitle">Lecturas y oraciones litúrgicas católicas</p>
             <div class="date-badge" id="dateBadge">📅 Cargando...</div>
@@ -288,8 +294,8 @@
 
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <div style="color: #667eea; font-size: 1.1rem; font-weight: 500;">🙏 Cargando liturgia del día...</div>
-            <div style="color: #6c757d; font-size: 0.9rem; margin-top: 10px;">Conectando con liturgy.day</div>
+            <div style="color: #667eea; font-size: 1rem; font-weight: 500;">🙏 Cargando liturgia del día...</div>
+            <div style="color: #6c757d; font-size: 0.8rem; margin-top: 8px;">Conectando con liturgy.day</div>
         </div>
 
         <div id="errorNotice" class="error-notice" style="display: none;">
@@ -300,7 +306,7 @@
         
         <div class="footer-info">
             <div>📖 Datos litúrgicos de <strong>liturgy.day</strong></div>
-            <div style="margin-top: 5px;">✅ Widget funcionando correctamente en Netlify/Vercel</div>
+            <div style="margin-top: 4px;">🔗 Compatible con iframe embedding</div>
         </div>
     </div>
 
@@ -308,7 +314,10 @@
         (function() {
             'use strict';
             
-            console.log('🚀 Iniciando widget de liturgia...');
+            // Configurar headers para iframe
+            if (window.self !== window.top) {
+                console.log('🔗 Ejecutándose dentro de un iframe');
+            }
             
             const dateBadge = document.getElementById('dateBadge');
             const loading = document.getElementById('loading');
@@ -328,19 +337,19 @@
                 readings: [
                     {
                         citation: "2 Samuel 7, 4-17",
-                        reading: "En aquellos días, el Señor dirigió esta palabra a Natán: «Ve y dile a mi siervo David: 'Así dice el Señor: ¿Vas a ser tú quien me construya una casa para que habite en ella? Desde el día en que saqué a los israelitas de Egipto hasta hoy, no he habitado en casa alguna, sino que he ido de acá para allá, en una tienda de campaña. En todo el tiempo que he caminado con los israelitas, ¿acaso dije yo a alguno de los jefes de Israel, a quienes mandé que apacentaran a mi pueblo: Por qué no me habéis construido una casa de cedro?' Pues bien, esto es lo que vas a decir a mi siervo David: 'Así dice el Señor de los ejércitos: Yo te saqué del pastizal, de andar tras las ovejas, para que fueras jefe de mi pueblo, Israel.'»",
+                        reading: "En aquellos días, el Señor dirigió esta palabra a Natán: «Ve y dile a mi siervo David: 'Así dice el Señor: ¿Vas a ser tú quien me construya una casa para que habite en ella? Desde el día en que saqué a los israelitas de Egipto hasta hoy, no he habitado en casa alguna, sino que he ido de acá para allá, en una tienda de campaña.'»",
                         type: "Primera Lectura"
                     },
                     {
                         citation: "Marcos 4, 1-20",
-                        reading: "En aquel tiempo, Jesús se puso a enseñar a orillas del lago. Acudió a él un gentío tan grande, que tuvo que subirse a una barca; se sentó en ella, y toda la gente se quedó en tierra, junto a la orilla del lago. Les enseñaba muchas cosas por medio de parábolas y les decía en su enseñanza: «Escuchad: Salió el sembrador a sembrar. Al sembrar, algo cayó al borde del camino; vinieron los pájaros y se lo comieron. Algo cayó en terreno pedregoso, donde no había mucha tierra, y brotó en seguida por no ser profunda la tierra; pero cuando salió el sol, se abrasó y, por no tener raíz, se secó. Algo cayó entre zarzas; crecieron las zarzas, lo ahogaron, y no dio grano. Y algo cayó en tierra buena: brotó, creció y dio grano; unas espigas dieron el treinta por uno; otras, el sesenta por uno; otras, el ciento por uno.»",
+                        reading: "En aquel tiempo, Jesús se puso a enseñar a orillas del lago. Acudió a él un gentío tan grande, que tuvo que subirse a una barca; se sentó en ella, y toda la gente se quedó en tierra, junto a la orilla del lago. Les enseñaba muchas cosas por medio de parábolas.",
                         type: "Evangelio"
                     }
                 ],
                 psalms: [
                     {
                         citation: "Salmo 88, 4-5. 27-28. 29-30",
-                        psalm: "R/. Cantaré eternamente las misericordias del Señor.\n\nSellé una alianza con mi elegido,\njurando a David, mi siervo:\n«Te fundaré un linaje perpetuo,\nedificaré tu trono para todas las edades.» R/.\n\nÉl me invocará: «Tú eres mi padre,\nmi Dios, mi Roca salvadora.»\nYo lo nombraré mi primogénito,\nel Altísimo entre los reyes de la tierra. R/.\n\nLe mantendré eternamente mi favor,\nmi alianza con él será estable.\nLe daré una descendencia perpetua\ny un trono duradero como el cielo.» R/."
+                        psalm: "R/. Cantaré eternamente las misericordias del Señor.\n\nSellé una alianza con mi elegido,\njurando a David, mi siervo:\n«Te fundaré un linaje perpetuo,\nedificaré tu trono para todas las edades.» R/."
                     }
                 ]
             };
@@ -367,7 +376,6 @@
             }
             
             function renderContent(data) {
-                console.log('🎨 Renderizando contenido:', data);
                 const formattedDate = formatDate(data.date);
                 
                 let html = `
@@ -433,7 +441,6 @@
                 }
                 
                 content.innerHTML = html;
-                console.log('✅ Contenido renderizado correctamente');
             }
             
             async function loadLiturgy() {
@@ -445,7 +452,6 @@
                 });
                 
                 try {
-                    console.log('🌐 Conectando con liturgy.day API...');
                     const response = await fetch(`https://liturgy.day/api/v1/calendar/${today}`);
                     
                     if (!response.ok) {
@@ -453,7 +459,6 @@
                     }
                     
                     const data = await response.json();
-                    console.log('✅ Datos recibidos de la API:', data);
                     
                     if (data && (data.readings || data.celebrations || data.psalms)) {
                         renderContent(data);
@@ -478,7 +483,6 @@
                 loadLiturgy();
             }
             
-            console.log('🎯 Widget de liturgia inicializado correctamente');
         })();
     </script>
 </body>
